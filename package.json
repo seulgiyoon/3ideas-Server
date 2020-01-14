@@ -2,8 +2,12 @@
   "name": "3ideas-server",
   "version": "1.0.0",
   "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
   "dependencies": {
     "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
