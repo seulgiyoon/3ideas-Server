@@ -22,7 +22,7 @@ module.exports = {
       .then(([result, created]) => {
         if (!created) {
           //? 유저이름 이미 존재함
-          return res.status(409).json('username is already exists!!!');
+          return res.status(400).json('username is already exists!!!');
         }
 
         //유저생성 시 응답
