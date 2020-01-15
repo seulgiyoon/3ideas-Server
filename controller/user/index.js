@@ -12,4 +12,7 @@ module.exports = {
   delete: (req, res) => {
     res.status(200).json('user delete');
   },
+  patch: (req, res) => {
+    res.status(201).json('user fetch');
+  },
 };
