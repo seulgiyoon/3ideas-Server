@@ -1,10 +1,25 @@
-const { users } = require('../../models');
+const { users, blacklist } = require('../../models');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 
 module.exports = {
   post: (req, res) => {
     const { username } = req.body;
+
+    if (req.cookies.token) {
+      //? 이미 발급받은 토큰이 존재함
+      const token = req.cookies.token;
+      blacklist.findOne({ where: { token } }).then(result => {
+        if (result) {
+          //! 이미 blacklist에 올라가 있는 token이다!!!
+          return res.status(401).json('invalid token');
+        }
+        return res.status(400).json('token already exist');
+      });
+
+      //! 토큰이 이미 존재한다면 login을 할 필요 없음
+      return;
+    }
 
     if (!username) {
       //! username이 비어있음
