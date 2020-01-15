@@ -29,10 +29,10 @@ app.get('/', (req, res) => {
 });
 
 app.use('/user', userRouter);
-app.use('/user', askRouter);
-app.use('/user', asksRouter);
-app.use('/user', answerRouter);
-app.use('/user', categoryRouter);
+app.use('/ask', askRouter);
+app.use('/asks', asksRouter);
+app.use('/answer', answerRouter);
+app.use('/category', categoryRouter);
 
 app.set('port', port);
 app.listen(app.get('port'), () => {
