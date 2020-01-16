@@ -60,8 +60,36 @@ module.exports = {
   },
 
   patch: (req, res) => {
-    res.status(200).json('ask patch');
+    const { title, contents, questionFlag } = req.body;
+    if (!title && !contents && !questionFlag) {
+      //! title, contents, questionFlag 셋 다 없으면 안됨.
+      return res.status(400).json('Please send patch data');
+    }
+
+    const patchValues = {};
+    if (title) {
+      patchValues.title = title;
+    }
+    if (contents) {
+      patchValues.contents = contents;
+    }
+    if (questionFlag) {
+      patchValues.questionFlag = questionFlag;
+    }
+
+    const askId = req.params.askId;
+    questions
+      .update(patchValues, { where: { id: askId } })
+      .then(([affectedRows]) => {
+        // console.log(affectedRows);
+        if (!affectedRows) {
+          return res.status(400).json('fail to patch');
+        }
+        res.status(200).json('success to patch');
+      })
+      .catch(err => res.status(400).send(err));
   },
+
   delete: (req, res) => {
     res.status(200).json('ask delete');
   },
