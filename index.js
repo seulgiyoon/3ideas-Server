@@ -8,6 +8,7 @@ const userRouter = require('./routes/user');
 const askRouter = require('./routes/ask');
 const asksRouter = require('./routes/asks');
 const answerRouter = require('./routes/answer');
+const answersRouter = require('./routes/answers');
 const categoryRouter = require('./routes/category');
 
 const app = express();
@@ -32,6 +33,7 @@ app.use('/user', userRouter);
 app.use('/ask', askRouter);
 app.use('/asks', asksRouter);
 app.use('/answer', answerRouter);
+app.use('/answers', answersRouter);
 app.use('/category', categoryRouter);
 
 app.set('port', port);
