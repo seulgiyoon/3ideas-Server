@@ -33,7 +33,7 @@ module.exports = {
         if (decoded) {
           //! 유효한 토큰
           loginErr = true;
-          return res.status(401).json('token already exist');
+          return res.status(401).json('you have token');
         }
       });
 
