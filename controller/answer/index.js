@@ -105,7 +105,11 @@ module.exports = {
     answers
       .destroy({ where: { id: answerId } })
       .then(result => {
-        console.log(result, ' deleted');
+        // console.log(result, ' deleted');
+        if (!result) {
+          return res.status(422).json('invalid answer id');
+        }
+
         return res.status(200).json(`answerId: ${answerId}'s answer deleted`);
       })
       .catch(err => res.status(400).send(err));
