@@ -1,6 +1,7 @@
-const { questions, users } = require('../../models');
+const { questions, users, answers } = require('../../models');
 
 module.exports = {
+  //? 질문글 등록 요청 ( /ask )
   post: (req, res) => {
     const { username, title, contents } = req.body;
     if (!username || !title || !contents) {
@@ -30,6 +31,7 @@ module.exports = {
       .catch(err => res.status(400).send(err));
   },
 
+  //? 질문글 보기 요청 ( /ask/질문글id )
   get: (req, res) => {
     const { askId } = req.params;
     if (!parseInt(askId)) {
@@ -43,6 +45,11 @@ module.exports = {
         include: [
           {
             model: users,
+            attributes: ['userName'],
+          },
+          {
+            model: answers,
+            attributes: ['id'],
           },
         ],
       })
@@ -54,11 +61,13 @@ module.exports = {
 
         const { id, title, contents, questionFlag, createdAt, updatedAt } = result;
         const username = result.user.userName;
-        res.status(200).json({ id, title, contents, username, questionFlag, createdAt, updatedAt });
+        const commentsCount = result.answers.length;
+        res.status(200).json({ id, title, contents, username, questionFlag, createdAt, updatedAt, commentsCount });
       })
       .catch(err => res.status(400).send(err));
   },
 
+  //? 질문글 수정 요청 ( /ask/질문글id )
   patch: (req, res) => {
     const { askId } = req.params;
     if (!parseInt(askId)) {
@@ -95,6 +104,7 @@ module.exports = {
       .catch(err => res.status(400).send(err));
   },
 
+  //? 질문글 삭제 요청 ( /ask/질문글id )
   delete: (req, res) => {
     const askId = req.params.askId;
     if (!parseInt(askId)) {
