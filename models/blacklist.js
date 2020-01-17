@@ -4,7 +4,10 @@ module.exports = (sequelize, DataType) => {
   const blacklist = sequelize.define(
     'blacklist',
     {
-      token: DataType.STRING,
+      token: {
+        type: DataType.STRING,
+        allowNull: false,
+      },
     },
     {
       tableName: 'blacklist',

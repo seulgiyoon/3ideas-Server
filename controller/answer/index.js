@@ -3,57 +3,62 @@ const { answers, users, user_like } = require('../../models');
 module.exports = {
   // ? 답변글 등록 요청 ( /answer/질문글id )
   post: (req, res) => {
-    
     const { askId } = req.params;
-    const { username, comment } = req.body;
+    const { username, contents } = req.body;
 
     // * 위 세 개 변수 이상하거나 없을 경우 에러 보내기.
     if (!Number(askId)) {
       return res.status(400).json('bad request!');
     }
-    if (!username || !comment) {
+    if (!username || !contents) {
       return res.status(400).json('neither username nor comment was fulfilled!');
     }
 
-    users.findOne({ where: {userName: username} })
-      .then((user) => {
+    users
+      .findOne({ where: { userName: username } })
+      .then(user => {
         // * 없는 유저일 경우 에러 보내기
         if (!user) {
           return res.status(404).json('invalid user!');
         }
         // * answers DB에 답변을 새로 생성하고 답변 id를 보낸다.
-        answers.create({ contents: comment, user_id: user.id, question_id: askId })
-          .then((result) => {
-            if (!result) {
-              return res.status(400).json('failed to post new answer')
-            }
-            const { id } = result.dataValues;
-            res.status(201).json({ id: id })
-          })
+        answers.create({ contents, user_id: user.id, question_id: askId }).then(result => {
+          if (!result) {
+            return res.status(400).json('failed to post new answer');
+          }
+          const { id } = result.dataValues;
+          res.status(201).json({ id: id });
+        });
       })
-      .catch(err => {console.log(err); res.status(400).send(err)});
+      .catch(err => {
+        console.log(err);
+        res.status(400).send(err);
+      });
   },
 
-  // ? 답변글 보기 요청 ( /answer/답변글id )  
+  // ? 답변글 보기 요청 ( /answer/답변글id )
   get: (req, res) => {
     const { answerId } = req.params;
     if (!Number(answerId)) {
       return res.status(400).json('bad request!');
     }
 
-    answers.findOne({ where: { id: answerId,},
-      include: [{ model: user_like }, { model: users }] //* left-join이 기본이다
-    })
-      .then((answer) => {
-        if(!answer) {  // ? answer가 없을때
+    answers
+      .findOne({
+        where: { id: answerId },
+        include: [{ model: user_like }, { model: users }], //* left-join이 기본이다
+      })
+      .then(answer => {
+        if (!answer) {
+          // ? answer가 없을때
           return res.status(404).json('no answers!');
         }
         // ? answer가 있으면 보내준다.
         // ! (answers의 user_id = users의 id)인 users의 userName을 보내준다.
         const { userName } = answer.user;
-        const likes = answer.user_likes.length;
-        const { id, contents, answerFlag } = answer;
-        return res.status(200).json({ id: id, contents: contents, username: userName, answerFlag: answerFlag, like: likes });
+        const like = answer.user_likes.length;
+        const { id, contents, answerFlag, createdAt, updatedAt } = answer;
+        return res.status(200).json({ id, username: userName, contents, answerFlag, like, createdAt, updatedAt });
       })
       .catch(err => res.status(400).send(err));
   },
@@ -78,12 +83,13 @@ module.exports = {
       patchValues.answerFlag = answerFlag;
     }
 
-    answers.update(patchValues, {where: { id: answerId }})
-      .then((result) => {
+    answers
+      .update(patchValues, { where: { id: answerId } })
+      .then(result => {
         if (!result) {
-          return res.status(400).json('failed to update data!')
+          return res.status(400).json('failed to update data!');
         }
-        return res.status(205).json(`answerId: ${answerId} updated!`);
+        return res.status(200).json({ id: answerId });
       })
       .catch(err => res.status(400).send(err));
   },
@@ -96,10 +102,11 @@ module.exports = {
       return res.status(400).json('bad request!');
     }
 
-    answers.destroy({ where: {id: answerId} })
-      .then((result) => {
-        console.log(result, " deleted")
-        return res.status(200).json( `answerId: ${answerId}'s answer deleted` )
+    answers
+      .destroy({ where: { id: answerId } })
+      .then(result => {
+        console.log(result, ' deleted');
+        return res.status(200).json(`answerId: ${answerId}'s answer deleted`);
       })
       .catch(err => res.status(400).send(err));
   },

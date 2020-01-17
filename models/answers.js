@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       answerFlag: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
       },
       user_id: {
         type: DataTypes.INTEGER,
@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
     },
-    {    },
+    {},
   );
 
   answers.associate = function(models) {
@@ -31,8 +31,8 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'question_id',
     });
     models.answers.hasMany(models.user_like, {
-      foreignKey: 'answer_id'
-    })
+      foreignKey: 'answer_id',
+    });
   };
   return answers;
 };
