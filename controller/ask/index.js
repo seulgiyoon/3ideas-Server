@@ -101,5 +101,16 @@ module.exports = {
       //! askId가 숫자가 아님
       return res.status(400).json('invalid API parameter');
     }
+
+    questions
+      .destroy({ where: { id: askId } })
+      .then(destroyedRows => {
+        if (!destroyedRows) {
+          return res.status(422).json('invalid ask id');
+        }
+
+        res.status(200).json('success to delete data');
+      })
+      .catch(err => res.status(400).send(err));
   },
 };
