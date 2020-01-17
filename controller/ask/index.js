@@ -60,6 +60,12 @@ module.exports = {
   },
 
   patch: (req, res) => {
+    const { askId } = req.params;
+    if (!parseInt(askId)) {
+      //! askId가 숫자가 아님
+      return res.status(400).json('invalid API parameter');
+    }
+
     const { title, contents, questionFlag } = req.body;
     if (!title && !contents && !questionFlag) {
       //! title, contents, questionFlag 셋 다 없으면 안됨.
@@ -77,7 +83,6 @@ module.exports = {
       patchValues.questionFlag = questionFlag;
     }
 
-    const askId = req.params.askId;
     questions
       .update(patchValues, { where: { id: askId } })
       .then(([affectedRows]) => {
@@ -91,6 +96,10 @@ module.exports = {
   },
 
   delete: (req, res) => {
-    res.status(200).json('ask delete');
+    const askId = req.params.askId;
+    if (!parseInt(askId)) {
+      //! askId가 숫자가 아님
+      return res.status(400).json('invalid API parameter');
+    }
   },
 };
