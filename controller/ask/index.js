@@ -90,7 +90,7 @@ module.exports = {
         if (!affectedRows) {
           return res.status(400).json('fail to patch');
         }
-        res.status(200).json('success to patch');
+        res.status(200).json({ id: askId });
       })
       .catch(err => res.status(400).send(err));
   },
@@ -109,7 +109,7 @@ module.exports = {
           return res.status(422).json('invalid ask id');
         }
 
-        res.status(200).json('success to delete data');
+        res.status(200).json(`id: ${askId} delete complete`);
       })
       .catch(err => res.status(400).send(err));
   },
