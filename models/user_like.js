@@ -13,7 +13,9 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
     },
-    {},
+    {
+      tableName: "user_like"
+    },
   );
 
   user_like.associate = function(models) {
