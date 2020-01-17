@@ -10,32 +10,28 @@ module.exports = {
       //? 이미 발급받은 토큰이 존재함
       let loginErr = false;
       const token = req.cookies.token;
+
       blacklist
         .findOne({ where: { token } })
         .then(result => {
           if (result) {
-            //! 이미 blacklist에 올라가 있는 token
-            loginErr = true;
-            return res.status(401).json('invalid token');
+            //! blacklist에 올라간 token
+            return;
           }
+
+          //? 유효한 토큰인지 확인
+          jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+            if (decoded) {
+              //! 유효한 토큰
+              loginErr = true;
+              return res.status(401).json('you have token');
+            }
+          });
         })
         .catch(err => {
           loginErr = true;
           return res.status(400).send(err);
         });
-
-      if (loginErr) {
-        return;
-      }
-
-      //? 유효한 토큰인지 확인
-      jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
-        if (decoded) {
-          //! 유효한 토큰
-          loginErr = true;
-          return res.status(401).json('you have token');
-        }
-      });
 
       if (loginErr) {
         return;
