@@ -1,9 +1,46 @@
-const { questions, answers } = require('../../models');
+const { questions, users, answers } = require('../../models');
 
 module.exports = {
+  //? 질문글 목록 요청( /asks 혹은 /asks?s=target )
   get: (req, res) => {
-    // GET /asks?s=target
     const target = req.query.s;
-    res.status(200).json(`asks get. query: ${target}`);
+
+    if (!target) {
+      //? 모든 질문글을 응답으로 보냄
+
+      questions
+        .findAll({
+          attributes: ['id', 'title', 'questionFlag', 'createdAt'],
+          include: [
+            {
+              model: users,
+              attributes: ['userName'],
+            },
+            {
+              model: answers,
+              attributes: ['id'],
+            },
+          ],
+        })
+        .then(asks => {
+          asks = asks.map(value => {
+            const ask = {};
+            Object.assign(ask, value.dataValues);
+
+            ask.username = ask.user.userName;
+            delete ask.user;
+
+            ask.commentsCount = ask.answers.length;
+            delete ask.answers;
+
+            return ask;
+          });
+
+          res.status(200).json(asks);
+        })
+        .catch(err => res.status(400).send(err));
+    } else {
+      res.status(200).json(`asks get. query: ${target}`);
+    }
   },
 };
