@@ -75,8 +75,8 @@ module.exports = {
       return res.status(400).json('invalid API parameter');
     }
 
-    const { title, contents, questionFlag } = req.body;
-    if (!title && !contents && !questionFlag) {
+    const { title, contents } = req.body;
+    if (!title && !contents) {
       //! title, contents, questionFlag 셋 다 없으면 안됨.
       return res.status(400).json('Please send patch data');
     }
@@ -87,9 +87,6 @@ module.exports = {
     }
     if (contents) {
       patchValues.contents = contents;
-    }
-    if (questionFlag) {
-      patchValues.questionFlag = questionFlag;
     }
 
     questions

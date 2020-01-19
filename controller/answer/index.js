@@ -66,21 +66,18 @@ module.exports = {
   // ? 답변글 수정 ( /answer/답변글id )
   patch: (req, res) => {
     const { answerId } = req.params;
-    const { contents, answerFlag } = req.body;
+    const { contents } = req.body;
 
     if (!Number(answerId)) {
       return res.status(400).json('bad request!');
     }
-    if (!contents && !answerFlag) {
+    if (!contents) {
       return res.status(400).json('Please send patch data!');
     }
 
     const patchValues = {};
     if (contents) {
       patchValues.contents = contents;
-    }
-    if (answerFlag) {
-      patchValues.answerFlag = answerFlag;
     }
 
     answers
