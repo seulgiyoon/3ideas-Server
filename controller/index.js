@@ -4,5 +4,6 @@ module.exports = {
   askController: require('./ask'),
   asksController: require('./asks'),
   categoryController: require('./category'),
+  likeController: require('./like'),
   userController: require('./user'),
 };
