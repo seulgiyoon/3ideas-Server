@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       questionFlag: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: false,
+        defaultValue: true,
       },
       user_id: {
         type: DataTypes.INTEGER,
