@@ -46,7 +46,10 @@ module.exports = {
     answers
       .findOne({
         where: { id: answerId },
-        include: [{ model: user_like }, { model: users }], //* left-join이 기본이다
+        include: [
+          { model: user_like, include: { model: users, attributes: ['userName'] } },
+          { model: users, attributes: ['userName'] },
+        ], //* left-join이 기본이다
       })
       .then(answer => {
         if (!answer) {
@@ -55,8 +58,13 @@ module.exports = {
         }
         // ? answer가 있으면 보내준다.
         // ! (answers의 user_id = users의 id)인 users의 userName을 보내준다.
+        // console.log('--------------------', answer.user_likes[0].user.userName);
+        // console.log('--------------------', answer.user_likes[1].user.userName);
         const { userName } = answer.user;
-        const like = answer.user_likes.length;
+        const like = answer.user_likes.reduce((acc, val) => {
+          acc.push({ username: val.user.userName });
+          return acc;
+        }, []);
         const { id, contents, answerFlag, createdAt, updatedAt } = answer;
         return res.status(200).json({ id, username: userName, contents, answerFlag, like, createdAt, updatedAt });
       })
