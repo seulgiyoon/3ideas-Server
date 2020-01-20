@@ -1,46 +1,38 @@
 const { questions, users, answers } = require('../../models');
 
 module.exports = {
-  //? 질문글 목록 요청( /asks 혹은 /asks?s=target )
+  //? 질문글 목록 요청( /asks )
   get: (req, res) => {
-    const target = req.query.s;
+    questions
+      .findAll({
+        attributes: ['id', 'title', 'questionFlag', 'createdAt'],
+        include: [
+          {
+            model: users,
+            attributes: ['userName'],
+          },
+          {
+            model: answers,
+            attributes: ['id'],
+          },
+        ],
+      })
+      .then(asks => {
+        asks = asks.map(value => {
+          const ask = {};
+          Object.assign(ask, value.dataValues);
 
-    if (!target) {
-      //? 모든 질문글을 응답으로 보냄
+          ask.username = ask.user.userName;
+          delete ask.user;
 
-      questions
-        .findAll({
-          attributes: ['id', 'title', 'questionFlag', 'createdAt'],
-          include: [
-            {
-              model: users,
-              attributes: ['userName'],
-            },
-            {
-              model: answers,
-              attributes: ['id'],
-            },
-          ],
-        })
-        .then(asks => {
-          asks = asks.map(value => {
-            const ask = {};
-            Object.assign(ask, value.dataValues);
+          ask.commentsCount = ask.answers.length;
+          delete ask.answers;
 
-            ask.username = ask.user.userName;
-            delete ask.user;
+          return ask;
+        });
 
-            ask.commentsCount = ask.answers.length;
-            delete ask.answers;
-
-            return ask;
-          });
-
-          res.status(200).json(asks);
-        })
-        .catch(err => res.status(400).send(err));
-    } else {
-      res.status(200).json(`asks get. query: ${target}`);
-    }
+        res.status(200).json(asks);
+      })
+      .catch(err => res.status(400).send(err));
   },
 };
