@@ -11,6 +11,7 @@ const answerRouter = require('./routes/answer');
 const answersRouter = require('./routes/answers');
 const likeRouter = require('./routes/like');
 const categoryRouter = require('./routes/category');
+const searchRouter = require('./routes/search');
 
 const app = express();
 const port = 5000;
@@ -37,6 +38,7 @@ app.use('/answer', answerRouter);
 app.use('/answers', answersRouter);
 app.use('/like', likeRouter);
 app.use('/category', categoryRouter);
+app.use('/search', searchRouter);
 
 app.set('port', port);
 app.listen(app.get('port'), () => {
