@@ -1,6 +1,6 @@
 const { questions, answers, users } = require('../../models');
 const { Sequelize } = require('sequelize');
-const { and, or, like, not } = Sequelize.Op;
+const { or, like } = Sequelize.Op;
 
 module.exports = {
   //? 검색 기능 ( /search?q=키워드 )
@@ -14,64 +14,46 @@ module.exports = {
 
     keyword = keyword.replace(/\s\s+/gi, ' '); //target 사이에 공백이 2개 이상 존재 > 하나의 공백으로 변환
 
-    //* 1. questions에서 찾기 => question id 저장
-    const searchIdResult = [];
-    await questions
-      .findAll({
-        where: {
-          [or]: [{ contents: { [like]: `%${keyword}%` } }, { title: { [like]: `%${keyword}%` } }],
-        },
-      })
-      .then(asks => {
-        // console.log(asks);
-        asks = asks.forEach(value => {
-          const { id } = value;
-          searchIdResult.push({ id });
-        });
-        return asks;
-      });
-    // console.log(searchIdResult);
+    //* 1. questions에서 찾기 => 찾는 조건 저장
+    const questionSearchCondition = [{ contents: { [like]: `%${keyword}%` } }, { title: { [like]: `%${keyword}%` } }];
 
-    //* 2. answers에서 찾기 => answer.user_id가 위에서 찾은 결과와 겹치지 않는다면 searchResult에 저장!
-    const answersNotCondition = searchIdResult.map(value => {
-      const question_id = value.id;
-      return { question_id };
-    });
-    // console.log(answersNotCondition);
-
+    //* answers에서 찾기 => questionSearchCondition에 question id 저장
     await answers
       .findAll({
         attributes: ['question_id'],
         where: {
-          [and]: [{ [not]: { [or]: answersNotCondition } }, { contents: { [like]: `%${keyword}%` } }],
+          contents: { [like]: `%${keyword}%` },
         },
       })
       .then(result => {
         // console.log(result);
         result = result.forEach(value => {
           const id = value.question_id;
-          searchIdResult.push({ id });
+          if (!questionSearchCondition.includes({ id })) {
+            questionSearchCondition.push({ id });
+          }
         });
         return result;
       });
-    // console.log(searchIdResult);
 
-    //? 찾은 questions id를 토대로 res로 보내줄 내용을 찾음
-    const searchResult = await questions
+    //? 찾은 질문글 id들 토대로 질문글에서 response data에 맞게 형식 바꿔서 저장
+    let searchResults = await questions
       .findAll({
-        attributes: ['id', 'title', 'questionFlag', 'createdAt'],
+        attributes: ['id', 'title', 'questionFlag', 'createdAt', 'contents'],
         include: [
           {
             model: users,
             attributes: ['userName'],
           },
           {
+            required: false,
             model: answers,
-            attributes: ['id'],
+            attributes: ['id', 'contents'],
+            where: { contents: { [like]: `%${keyword}%` } },
           },
         ],
         where: {
-          [or]: searchIdResult,
+          [or]: questionSearchCondition,
         },
       })
       .then(asks => {
@@ -82,14 +64,11 @@ module.exports = {
           ask.username = ask.user.userName;
           delete ask.user;
 
-          ask.commentsCount = ask.answers.length;
-          delete ask.answers;
-
           return ask;
         });
         return asks;
       });
 
-    res.status(200).json(searchResult);
+    res.status(200).json(searchResults);
   },
 };
