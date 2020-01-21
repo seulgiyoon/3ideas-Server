@@ -31,6 +31,9 @@ module.exports = {
 
         const body = user.dataValues;
 
+        body.username = body.userName;
+        delete body.userName;
+
         body.postCount = body.questions.length;
         delete body.questions;
 
