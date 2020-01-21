@@ -56,19 +56,24 @@ module.exports = {
           [or]: questionSearchCondition,
         },
       })
-      .then(asks => {
-        asks = asks.map(value => {
-          const ask = {};
-          Object.assign(ask, value.dataValues);
+      .then(async asks => {
+        asks = await Promise.all(
+          asks.map(async value => {
+            const ask = {};
+            Object.assign(ask, value.dataValues);
 
-          ask.username = ask.user.userName;
-          delete ask.user;
+            ask.username = ask.user.userName;
+            delete ask.user;
 
-          return ask;
-        });
+            ask.commentsCount = await answers.count({ where: { question_id: ask.id } });
+
+            return ask;
+          }),
+        );
         return asks;
       });
 
+    // console.log(searchResults);
     res.status(200).json(searchResults);
   },
 };
