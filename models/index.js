@@ -37,6 +37,7 @@ db.categories
   .findAll({
     where: {
       [or]: [
+        { categoryName: null },
         { categoryName: '교육, 학문' },
         { categoryName: '컴퓨터 통신' },
         { categoryName: '게임' },
@@ -56,6 +57,7 @@ db.categories
     if (!result.length) {
       // console.log('empty');
       db.categories.bulkCreate([
+        { categoryName: null },
         { categoryName: '교육, 학문' },
         { categoryName: '컴퓨터 통신' },
         { categoryName: '게임' },
