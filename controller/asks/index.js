@@ -5,7 +5,7 @@ module.exports = {
   get: (req, res) => {
     questions
       .findAll({
-        attributes: ['id', 'title', 'questionFlag', 'createdAt'],
+        attributes: ['id', 'title', 'questionFlag', 'createdAt', 'contents'],
         include: [
           {
             model: users,
