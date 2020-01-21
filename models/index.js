@@ -7,6 +7,7 @@ const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.js')[env];
 const db = {};
+const { or } = Sequelize.Op;
 
 let sequelize;
 if (config.use_env_variable) {
@@ -31,6 +32,44 @@ Object.keys(db).forEach(modelName => {
     db[modelName].associate(db);
   }
 });
+
+db.categories
+  .findAll({
+    where: {
+      [or]: [
+        { categoryName: '교육, 학문' },
+        { categoryName: '컴퓨터 통신' },
+        { categoryName: '게임' },
+        { categoryName: '엔터테인먼트, 예술' },
+        { categoryName: '생활' },
+        { categoryName: '건강' },
+        { categoryName: '사회, 정치' },
+        { categoryName: '경제' },
+        { categoryName: '여행' },
+        { categoryName: '스포츠, 레저' },
+        { categoryName: '쇼핑' },
+      ],
+    },
+  })
+  .then(result => {
+    // console.log(result);
+    if (!result.length) {
+      // console.log('empty');
+      db.categories.bulkCreate([
+        { categoryName: '교육, 학문' },
+        { categoryName: '컴퓨터 통신' },
+        { categoryName: '게임' },
+        { categoryName: '엔터테인먼트, 예술' },
+        { categoryName: '생활' },
+        { categoryName: '건강' },
+        { categoryName: '사회, 정치' },
+        { categoryName: '경제' },
+        { categoryName: '여행' },
+        { categoryName: '스포츠, 레저' },
+        { categoryName: '쇼핑' },
+      ]);
+    }
+  });
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
