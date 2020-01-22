@@ -16,7 +16,7 @@ if (config.use_env_variable) {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
-// sequelize.sync();
+sequelize.sync();
 
 fs.readdirSync(__dirname)
   .filter(file => {
@@ -26,6 +26,12 @@ fs.readdirSync(__dirname)
     const model = sequelize['import'](path.join(__dirname, file));
     db[model.name] = model;
   });
+
+Object.keys(db).forEach(modelName => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
 
 sequelize.sync().then(() => {
   db.categories
@@ -67,12 +73,6 @@ sequelize.sync().then(() => {
         ]);
       }
     });
-});
-
-Object.keys(db).forEach(modelName => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
 });
 
 db.sequelize = sequelize;
