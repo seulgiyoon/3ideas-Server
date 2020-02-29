@@ -1,20 +1,18 @@
-## 1. Intro
-
 ------
+## 1. Intro
 
 ![logo_200px](img/logo_200px.png)
 
 - **팀 명:** 태슬라(Teslra)
 - **프로젝트 명:** 3ideas
 - **프로젝트 형태:** 수강생 프로젝트
-- **팀원:** 윤슬기**(팀장)**, 태라미, 민태관
+- **팀원:** 윤슬기(팀장), 태라미, 민태관
 - **배포 링크:** http://3ideas-client.s3-website.ap-northeast-2.amazonaws.com/
 
 
 
-## 2. Project
-
 ------
+## 2. Project
 
 ## 3 ideas
 
@@ -78,6 +76,7 @@ JavaScript, Node.js, Express.js, Sequelize, Mysql, JWT, AWS(S3, EC2, RDS)
 
 
 
+------
 ## 3. Members
 
 ------
